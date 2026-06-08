@@ -2,6 +2,8 @@ package rvm
 
 import bridge.RCompilerBridge
 import interpreter.Machine
+import jit.JitManager
+import profiler.Profiler
 import java.nio.file.Path
 import kotlin.system.exitProcess
 
@@ -12,7 +14,8 @@ fun main(args: Array<String>) {
     }
 
     val module = RCompilerBridge.buildModuleFromFile(Path.of(args[0]), optimize = false)
-    val exitCode = Machine(module, System.`in`, System.out).runMain()
+    val profiler = Profiler()
+    val jitManager = JitManager(module)
+    val exitCode = Machine(module, System.`in`, System.out, profiler, jitManager).runMain()
     exitProcess(exitCode)
 }
-
