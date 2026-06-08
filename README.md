@@ -17,9 +17,24 @@ This project should reuse RCompiler's existing frontend and `backend.ir`
 representation. Avoid building a separate LLVM IR text parser unless it becomes
 an optional compatibility path later.
 
-Current status: first simple interpreter implementation. The VM builds `.rx`
-through RCompiler into `backend.ir.IrModule`, then executes the module with a
-structured-memory interpreter.
+Current status: interpreter, profiler, and method-based QEMU JIT. The
+VM builds `.rx` through RCompiler into `backend.ir.IrModule`, executes through a
+structured-memory interpreter, and can compile hot closed call graphs to
+function-level RISC-V objects plus a QEMU entry ELF.
+
+The JIT cache is function/object based:
+
+```text
+.rvm-cache/functions/<function-fingerprint>/function.s
+.rvm-cache/functions/<function-fingerprint>/function.o
+.rvm-cache/entries/<root-fingerprint>/wrapper.s
+.rvm-cache/entries/<root-fingerprint>/wrapper.o
+.rvm-cache/entries/<root-fingerprint>/root.elf
+```
+
+Pointer arguments are passed through a wrapper protocol that copies the full
+pointee region into a guest arena before the call and copies the full arena back
+after QEMU returns.
 
 Basic commands:
 

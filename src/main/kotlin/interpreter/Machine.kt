@@ -38,6 +38,7 @@ import backend.ir.IrValue
 import backend.ir.PhiBranch
 import backend.ir.PrimitiveKind
 import backend.ir.UnaryOperator
+import jit.JitManager
 import profiler.Profiler
 import java.io.InputStream
 import java.util.Scanner
@@ -47,6 +48,7 @@ class Machine(
     input: InputStream,
     private val output: Appendable,
     private val profiler: Profiler? = null,
+    private val jitManager: JitManager? = null,
 ) {
     private val memory = Memory()
     private val inputScanner = Scanner(input)
@@ -67,6 +69,9 @@ class Machine(
 
     private fun call(function: IrFunction, args: List<RuntimeValue>): RuntimeValue {
         profiler?.recordCall(function.name)
+        if (jitManager != null && (profiler == null || profiler.isHot(function.name))) {
+            jitManager.invoke(function, args, memory)?.let { return it }
+        }
         val frame = Frame(function, args)
         while (true) {
             val block = frame.currentBlock
