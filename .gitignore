@@ -1,9 +1,7 @@
 .gradle/
 build/
-AGENTS.md
 .agents
 .codex
 .gradle
 .idea
 .kotlin
-docs/
