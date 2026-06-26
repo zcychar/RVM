@@ -1,0 +1,24 @@
+fn choose(x: i32) -> i32 {
+    let mut i: i32 = 0;
+    let mut acc: i32 = x;
+    while (i < 30000) {
+        if ((i & 7) != 0) {
+            acc = acc + i;
+        } else {
+            acc = acc - i;
+        }
+        i = i + 1;
+    }
+    return acc;
+}
+
+fn main() {
+    let mut i: i32 = 0;
+    let mut acc: i32 = 0;
+    while (i < 50) {
+        acc = acc + choose(i);
+        i = i + 1;
+    }
+    printlnInt(acc);
+    exit(0);
+}

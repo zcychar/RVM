@@ -31,7 +31,16 @@ class Profiler(
         updateHot(profile)
     }
 
+    fun recordBlockEdge(name: String, from: String, to: String) {
+        val profile = profileFor(name)
+        val edge = BlockEdge(from, to)
+        profile.blockEdges[edge] = profile.blockEdges.getOrDefault(edge, 0) + 1
+    }
+
     fun profile(name: String): MethodProfile? = profiles[name]
+
+    fun blockEdgeCount(name: String, from: String, to: String): Long =
+        profiles[name]?.blockEdges?.get(BlockEdge(from, to)) ?: 0
 
     fun allProfiles(): List<MethodProfile> = profiles.values.toList()
 

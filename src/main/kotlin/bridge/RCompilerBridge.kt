@@ -5,11 +5,8 @@ import backend.ir.IrModule
 import frontend.RLexer
 import frontend.RParser
 import frontend.RPreprocessor
-import frontend.semantic.RImplInjector
-import frontend.semantic.RSemanticChecker
-import frontend.semantic.RSymbolCollector
-import frontend.semantic.RSymbolResolver
-import frontend.semantic.toPrelude
+import frontend.ast.CrateNode
+import frontend.semantic.*
 import java.nio.file.Files
 import java.nio.file.Path
 
@@ -28,7 +25,12 @@ object RCompilerBridge {
         RImplInjector(prelude, crate).process()
         RSemanticChecker(prelude, crate).process()
 
-        return IrBackend(enableOptimization = optimize).buildModule(crate, prelude)
+        return IrBackend(enableOptimization = optimize).buildModuleReflectively(crate, prelude)
+    }
+
+    private fun IrBackend.buildModuleReflectively(crate: CrateNode, globalScope: Scope): IrModule {
+        val method = javaClass.getDeclaredMethod("buildModule", CrateNode::class.java, Scope::class.java)
+        method.isAccessible = true
+        return method.invoke(this, crate, globalScope) as IrModule
     }
 }
-

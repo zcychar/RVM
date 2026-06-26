@@ -1,12 +1,6 @@
 package jit
 
-import backend.ir.IrArray
-import backend.ir.IrFunction
-import backend.ir.IrPointer
-import backend.ir.IrPrimitive
-import backend.ir.IrStruct
-import backend.ir.IrType
-import backend.ir.typeLayout
+import backend.ir.*
 
 internal data class EntryAbi(
     val rootName: String,

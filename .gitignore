@@ -7,3 +7,6 @@ AGENTS.md
 .idea
 .kotlin
 docs/
+.jdk/
+.gradle-user-home/
+.gradle-docker/

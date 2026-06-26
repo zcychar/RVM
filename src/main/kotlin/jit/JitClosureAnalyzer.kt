@@ -1,26 +1,6 @@
 package jit
 
-import backend.ir.IrAlloca
-import backend.ir.IrBinary
-import backend.ir.IrBranch
-import backend.ir.IrCall
-import backend.ir.IrCast
-import backend.ir.IrCmp
-import backend.ir.IrConst
-import backend.ir.IrFunction
-import backend.ir.IrFunctionRef
-import backend.ir.IrGep
-import backend.ir.IrGlobalRef
-import backend.ir.IrInstruction
-import backend.ir.IrJump
-import backend.ir.IrLoad
-import backend.ir.IrModule
-import backend.ir.IrPhi
-import backend.ir.IrReturn
-import backend.ir.IrStore
-import backend.ir.IrTerminator
-import backend.ir.IrUnary
-import backend.ir.IrValue
+import backend.ir.*
 
 internal class JitClosureAnalyzer(module: IrModule) {
     private val functions = module.declaredFunctions().associateBy { it.name }

@@ -1,0 +1,9 @@
+.git
+.gradle
+.gradle-user-home
+.gradle-docker
+.idea
+.jdk
+.kotlin
+.rvm-cache
+build

@@ -4,6 +4,7 @@ import backend.ir.IrFunction
 import backend.ir.IrModule
 import interpreter.Memory
 import interpreter.RuntimeValue
+import profiler.Profiler
 import java.nio.file.Path
 import kotlin.io.path.createDirectories
 import kotlin.io.path.exists
@@ -13,6 +14,7 @@ class JitManager(
     private val module: IrModule,
     private val cacheRoot: Path = Path.of(".rvm-cache"),
     private val toolchain: JitToolchain = JitToolchain.detect(),
+    private val profiler: Profiler? = null,
 ) {
     private val functionArtifacts = mutableMapOf<String, FunctionArtifact>()
     private val entryArtifacts = mutableMapOf<String, EntryArtifact>()
@@ -33,21 +35,22 @@ class JitManager(
     }
 
     private fun ensureEntry(root: IrFunction): EntryArtifact? {
-        entryArtifacts[root.name]?.let {
-            if (it.executablePath.exists()) return it
-        }
-
         val closure = closureAnalyzer.buildClosure(root) ?: return null
         if (closure.any { !closureAnalyzer.isEligibleFunction(it) }) return null
 
         val abi = EntryAbi.from(root) ?: return null
         val functionObjects = closure.map { ensureFunctionObject(it) ?: return null }
         val fingerprint = entryFingerprint(root, abi, functionObjects)
+        val key = "${root.name}:$fingerprint"
+        entryArtifacts[key]?.let {
+            if (it.executablePath.exists()) return it
+        }
+
         val entryDir = cacheRoot.resolve("entries").resolve("${safeName(root.name)}-$fingerprint")
         val elfPath = entryDir.resolve("root.elf")
 
         if (elfPath.exists()) {
-            return EntryArtifact(abi, elfPath).also { entryArtifacts[root.name] = it }
+            return EntryArtifact(abi, elfPath).also { entryArtifacts[key] = it }
         }
 
         entryDir.createDirectories()
@@ -65,11 +68,12 @@ class JitManager(
             appendLine("objects=${functionObjects.joinToString(",") { it.functionName }}")
         })
 
-        return EntryArtifact(abi, elfPath).also { entryArtifacts[root.name] = it }
+        return EntryArtifact(abi, elfPath).also { entryArtifacts[key] = it }
     }
 
     private fun ensureFunctionObject(function: IrFunction): FunctionArtifact? {
-        val fingerprint = hashString(function.render())
+        val layout = HotBlockLayout.apply(function, profiler?.profile(function.name))
+        val fingerprint = hashString(layout.function.render())
         val key = "${function.name}:$fingerprint"
         functionArtifacts[key]?.let {
             if (it.objectPath.exists()) return it
@@ -84,12 +88,13 @@ class JitManager(
         }
 
         dir.createDirectories()
-        asmPath.writeText(functionCompiler.compile(function))
+        asmPath.writeText(functionCompiler.compile(layout.function))
         if (!processRunner.assemble(asmPath, objectPath)) return null
 
         dir.resolve("meta.txt").writeText(buildString {
             appendLine("function=${function.name}")
             appendLine("fingerprint=$fingerprint")
+            appendLine("layout=${layout.order.joinToString(",")}")
             appendLine("callees=${closureAnalyzer.directUserCallees(function).joinToString(",")}")
         })
 

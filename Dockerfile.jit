@@ -1,0 +1,12 @@
+FROM eclipse-temurin:24-jdk-noble
+
+RUN apt-get update \
+    && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+        binutils-riscv64-unknown-elf \
+        ca-certificates \
+        make \
+        nodejs \
+        qemu-user \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /work/RVM

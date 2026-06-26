@@ -3,11 +3,7 @@ package jit
 import backend.ir.IrPrimitive
 import backend.ir.IrType
 import backend.ir.PrimitiveKind
-import interpreter.IntValue
-import interpreter.Memory
-import interpreter.PointerValue
-import interpreter.RuntimeValue
-import interpreter.UnitValue
+import interpreter.*
 import java.io.ByteArrayOutputStream
 
 internal class JitInvocation private constructor(

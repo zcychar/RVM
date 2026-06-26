@@ -1,0 +1,25 @@
+fn kernel(seed: i32, rounds: i32) -> i32 {
+    let mut i: i32 = 0;
+    let mut x: i32 = seed;
+    while (i < rounds) {
+        x = x * 1664525 + 1013904223;
+        if ((x & 1) == 0) {
+            x = x + i;
+        } else {
+            x = x - i;
+        }
+        i = i + 1;
+    }
+    return x;
+}
+
+fn main() {
+    let mut i: i32 = 0;
+    let mut acc: i32 = 0;
+    while (i < 60) {
+        acc = acc + kernel(i + 1, 20000);
+        i = i + 1;
+    }
+    printlnInt(acc);
+    exit(0);
+}

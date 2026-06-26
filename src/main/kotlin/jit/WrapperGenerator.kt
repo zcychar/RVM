@@ -5,6 +5,7 @@ private const val ARG_REGISTER_COUNT = 8
 internal object WrapperGenerator {
     fun generate(abi: EntryAbi): String = buildString {
         appendLine("    .option nopic")
+        appendLine("    .option norelax")
         appendLine("    .text")
         appendLine("    .globl _start")
         appendLine("_start:")

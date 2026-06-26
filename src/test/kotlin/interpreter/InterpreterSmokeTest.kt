@@ -28,10 +28,13 @@ class InterpreterSmokeTest {
 
     @Test
     fun runsIr1ComprehensiveBenchmarks() {
+        val sourceRoot = Path.of("../src/main/resources/RCompiler-Testcases/IR-1/src")
+        if (!Files.isDirectory(sourceRoot)) return
+
         for (n in 1..50) {
             val case = "comprehensive$n"
             System.err.println("running $case")
-            val source = Path.of("../src/main/resources/RCompiler-Testcases/IR-1/src/$case/$case.rx")
+            val source = sourceRoot.resolve("$case/$case.rx")
             val input = Files.readString(Path.of("benchmarks/rcompiler-ir1-unopt/input/$case.in"))
             val expected = Files.readString(Path.of("benchmarks/rcompiler-ir1-unopt/expected/$case.out"))
             val output = StringBuilder()

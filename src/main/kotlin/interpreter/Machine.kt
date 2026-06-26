@@ -1,47 +1,10 @@
 package interpreter
 
-import backend.ir.BinaryOperator
-import backend.ir.CastKind
-import backend.ir.ComparePredicate
-import backend.ir.IrAlloca
-import backend.ir.IrArray
-import backend.ir.IrBasicBlock
-import backend.ir.IrBinary
-import backend.ir.IrBranch
-import backend.ir.IrCall
-import backend.ir.IrCast
-import backend.ir.IrCmp
-import backend.ir.IrConst
-import backend.ir.IrConstant
-import backend.ir.IrFunction
-import backend.ir.IrFunctionRef
-import backend.ir.IrGep
-import backend.ir.IrGlobal
-import backend.ir.IrGlobalRef
-import backend.ir.IrInstruction
-import backend.ir.IrJump
-import backend.ir.IrLoad
-import backend.ir.IrLocal
-import backend.ir.IrModule
-import backend.ir.IrParameter
-import backend.ir.IrPhi
-import backend.ir.IrPointer
-import backend.ir.IrPrimitive
-import backend.ir.IrReturn
-import backend.ir.IrStore
-import backend.ir.IrStruct
-import backend.ir.IrTerminator
-import backend.ir.IrType
-import backend.ir.IrUndef
-import backend.ir.IrUnary
-import backend.ir.IrValue
-import backend.ir.PhiBranch
-import backend.ir.PrimitiveKind
-import backend.ir.UnaryOperator
+import backend.ir.*
 import jit.JitManager
 import profiler.Profiler
 import java.io.InputStream
-import java.util.Scanner
+import java.util.*
 
 class Machine(
     private val module: IrModule,
@@ -83,6 +46,7 @@ class Machine(
             when (val step = executeTerminator(block.terminator ?: error("block ${block.label} has no terminator"), frame)) {
                 is Step.Return -> return step.value
                 is Step.Next -> {
+                    profiler?.recordBlockEdge(function.name, block.label, step.label)
                     if (isBackEdge(function, block.label, step.label)) {
                         profiler?.recordBackEdge(function.name)
                     }

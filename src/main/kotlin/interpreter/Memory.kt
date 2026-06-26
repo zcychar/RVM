@@ -1,13 +1,6 @@
 package interpreter
 
-import backend.ir.IrArray
-import backend.ir.IrPointer
-import backend.ir.IrPrimitive
-import backend.ir.IrStruct
-import backend.ir.IrType
-import backend.ir.PrimitiveKind
-import backend.ir.typeLayout
-import backend.ir.typeSize
+import backend.ir.*
 
 class Memory {
     private data class MemoryObject(

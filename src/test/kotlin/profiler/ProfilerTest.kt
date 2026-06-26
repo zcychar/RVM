@@ -10,6 +10,19 @@ import kotlin.test.assertTrue
 
 class ProfilerTest {
     @Test
+    fun recordsBlockEdgeCounters() {
+        val profiler = Profiler()
+
+        profiler.recordBlockEdge("main", "entry", "body")
+        profiler.recordBlockEdge("main", "entry", "body")
+        profiler.recordBlockEdge("main", "body", "exit")
+
+        assertEquals(2, profiler.blockEdgeCount("main", "entry", "body"))
+        assertEquals(1, profiler.blockEdgeCount("main", "body", "exit"))
+        assertEquals(0, profiler.blockEdgeCount("main", "entry", "exit"))
+    }
+
+    @Test
     fun recordsMethodCountersAndHotMethods() {
         val source = """
             fn inc(x: i32) -> i32 {
@@ -45,6 +58,7 @@ class ProfilerTest {
         assertTrue(main.instructions > 0)
         assertTrue(inc.instructions > 0)
         assertTrue(main.backEdges > 0)
+        assertTrue(main.blockEdges.isNotEmpty())
         assertTrue(main.hot)
         assertTrue(inc.hot)
         assertEquals(listOf("main", incName), profiler.hotMethods().map { it.name })
