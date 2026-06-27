@@ -1,14 +1,31 @@
 # RCompiler IR-1 Unoptimized Benchmark Reference
 
 This directory keeps the previous LLVM-style IR benchmark snapshot for
-reference. RVM's primary input is now `.rx` source through RCompiler, so these
-files are not the main implementation target.
+reference. RVM's primary input is now `.rx` source through RCompiler.
+
+The matching runnable sources are mirrored in this repository:
+
+```text
+benchmarks/rcompiler-testcases/semantic-2/comprehensive*/comprehensive*.rx
+```
+
+Those files were copied from the parent RCompiler checkout's
+`RCompiler-Testcases` submodule. To refresh the mirror, update the parent
+submodule and copy it into `benchmarks/rcompiler-testcases/`.
+
+```bash
+git submodule update --init --remote src/main/resources/RCompiler-Testcases
+```
 
 ## Layout
 
 - `ll/`: generated LLVM-style IR files.
-- `input/`: testcase stdin files copied from RCompiler.
-- `expected/`: expected stdout files copied from RCompiler.
+- `input/`: testcase stdin files copied from the old IR-1 dataset.
+- `expected/`: expected stdout files copied from the old IR-1 dataset.
+
+The benchmark driver uses the mirrored `semantic-2` `.rx/.in/.out` files
+directly for interpreter/JIT timing and keeps this directory as an IR-shape
+reference.
 
 ## Generation
 
@@ -26,7 +43,10 @@ for n in $(seq 1 50); do
 done
 ```
 
-Inputs and expected outputs were copied from the same testcase directories.
+Inputs and expected outputs were copied from the same testcase directories. The
+current benchmark source path is `semantic-2`, because the upstream submodule no
+longer checks out `IR-1/src/...` source files; `IR-1` now contains only testcase
+metadata.
 
 ## Baseline Facts
 

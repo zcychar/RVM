@@ -10,7 +10,7 @@ import kotlin.io.path.createDirectories
 import kotlin.io.path.exists
 import kotlin.io.path.writeText
 
-class JitManager(
+class  JitManager(
     private val module: IrModule,
     private val cacheRoot: Path = Path.of(".rvm-cache"),
     private val toolchain: JitToolchain = JitToolchain.detect(),

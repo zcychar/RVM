@@ -6,6 +6,7 @@ RUN apt-get update \
         ca-certificates \
         make \
         nodejs \
+        python3 \
         qemu-user \
     && rm -rf /var/lib/apt/lists/*
 
